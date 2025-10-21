@@ -3,6 +3,7 @@ export const schema = {
   properties: {
     firstName: { type: "string", minLength: 2 },
     age: { type: "number" },
+    modemType: { type: "string", enum: ["ASUS", "NETGEAR"] },
   },
   required: ["firstName"],
 };
@@ -12,5 +13,8 @@ export const uischema = {
   elements: [
     { type: "Control", scope: "#/properties/firstName" },
     { type: "Control", scope: "#/properties/age" },
+    { type: "Control", scope: "#/properties/modemType",
+      options: {autocomplete: true}
+    },
   ],
 };

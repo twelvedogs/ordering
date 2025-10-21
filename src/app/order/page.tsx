@@ -6,7 +6,7 @@ import {
   materialCells,
   materialRenderers,
 } from "@jsonforms/material-renderers";
-import { schema, uischema } from "../schemas/user";
+import * as user from "../schemas/user";
 
 export default function JsonForm() {
   const [data, setData] = useState({});
@@ -14,8 +14,8 @@ export default function JsonForm() {
   return (
     <div style={{ padding: 20 }}>
       <JsonForms
-        schema={schema}
-        uischema={uischema}
+        schema={user.schema}
+        uischema={user.uischema}
         data={data}
         renderers={materialRenderers}
         cells={materialCells}
