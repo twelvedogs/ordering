@@ -13,8 +13,10 @@ export const uischema = {
   elements: [
     { type: "Control", scope: "#/properties/firstName" },
     { type: "Control", scope: "#/properties/age" },
-    { type: "Control", scope: "#/properties/modemType",
-      options: {autocomplete: true}
+    {
+      type: "Control",
+      scope: "#/properties/modemType",
+      options: { autocomplete: true },
     },
   ],
 };
