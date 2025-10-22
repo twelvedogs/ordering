@@ -6,10 +6,17 @@ import {
   materialCells,
   materialRenderers,
 } from "@jsonforms/material-renderers";
-import { schema, uischema } from "../schemas/user";
+import { createSchema, uischema } from "../schemas/user";
 
-export default function JsonForm() {
+interface OrderFormClientProps {
+  modemOptions: string[];
+}
+
+export default function OrderFormClient({ modemOptions }: OrderFormClientProps) {
   const [data, setData] = useState({});
+
+  // Create schema with dynamic modem options
+  const schema = createSchema(modemOptions);
 
   return (
     <div style={{ padding: 20 }}>

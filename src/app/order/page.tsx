@@ -1,27 +1,40 @@
-"use client";
+import React from "react";
+import { getDatabase } from "@/app/lib/db";
+import OrderFormClient from "./OrderFormClient";
 
-import React, { useState } from "react";
-import { JsonForms } from "@jsonforms/react";
-import {
-  materialCells,
-  materialRenderers,
-} from "@jsonforms/material-renderers";
-import * as user from "../schemas/user";
+// Server Component - fetches data
+export default async function OrderPage() {
+  const db = getDatabase();
 
-export default function JsonForm() {
-  const [data, setData] = useState({});
+  try {
+    // Ensure modems table exists
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS modems (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        model TEXT
+      )
+    `);
 
-  return (
-    <div style={{ padding: 20 }}>
-      <JsonForms
-        schema={user.schema}
-        uischema={user.uischema}
-        data={data}
-        renderers={materialRenderers}
-        cells={materialCells}
-        onChange={({ data }) => setData(data)}
-      />
-      <pre>{JSON.stringify(data, null, 2)}</pre>
-    </div>
-  );
+    // Fetch all modems
+    const modems = db.prepare("SELECT * FROM modems").all() as Array<{
+      id: number;
+      name: string;
+      model: string;
+    }>;
+
+    // Extract model names for the form enum
+    const modemOptions =
+      modems.length > 0
+        ? modems.map((modem) => modem.model)
+        : ["ASUS", "NETGEAR"]; // Fallback to defaults if no data
+
+    return <OrderFormClient modemOptions={modemOptions} />;
+  } catch (error) {
+    console.error("Database error:", error);
+    // Fallback to default options on error
+    return <OrderFormClient modemOptions={["ASUS", "NETGEAR"]} />;
+  } finally {
+    db.close();
+  }
 }
