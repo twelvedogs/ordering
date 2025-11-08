@@ -45,7 +45,10 @@ export default function Home() {
           >
             Read our docs
           </a>
+          <br></br>
           <Link href="/order">Go to order Page</Link>
+          <br></br>
+          <Link href="/modems">Go to modems Page</Link>
         </div>
       </main>
       <footer className={styles.footer}>

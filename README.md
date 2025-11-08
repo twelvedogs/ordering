@@ -2,17 +2,56 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+This project uses PostgreSQL as the database. Make sure you have PostgreSQL installed and running on your system.
+
+### Database Setup
+
+1. Create a PostgreSQL database named `ordering`:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+createdb ordering
 ```
+
+2. Copy the example environment file and configure your database connection:
+
+```bash
+cp .env.local.example .env.local
+```
+
+3. Edit `.env.local` with your PostgreSQL credentials:
+
+```env
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_DB=ordering
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=your_password
+```
+
+### Quick Start Commands
+
+After setting up the database and environment variables:
+
+```bash
+# Install dependencies
+pnpm install
+
+# Test PostgreSQL connection
+node scripts/test-connection.js
+
+# Initialize database schema
+node scripts/init-db.js
+
+# Seed with sample data
+node scripts/seed-modems.js
+
+# Start development server
+pnpm dev
+```
+
+
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 

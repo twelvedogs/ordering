@@ -2,29 +2,27 @@ import { NextResponse } from "next/server";
 import { getDatabase } from "../../lib/db";
 
 export async function GET() {
-  const db = getDatabase();
+  const pool = getDatabase();
 
   try {
     // Create the modems table if it doesn't exist
-    db.exec(`
+    await pool.query(`
       CREATE TABLE IF NOT EXISTS modems (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id SERIAL PRIMARY KEY,
         name TEXT,
         model TEXT
       )
     `);
 
     // Query all modems
-    const modems = db.prepare("SELECT * FROM modems").all();
+    const result = await pool.query("SELECT * FROM modems ORDER BY id");
 
-    return NextResponse.json({ success: true, data: modems });
+    return NextResponse.json({ success: true, data: result.rows });
   } catch (error) {
     console.error("Database error:", error);
     return NextResponse.json(
       { success: false, error: "Failed to fetch modems" },
       { status: 500 },
     );
-  } finally {
-    db.close();
   }
 }
