@@ -1,4 +1,5 @@
-// Function to generate schema with dynamic modem options
+// order schema
+// todo: break out customer details into separate schema
 export function createSchema(modemOptions: string[]) {
   var planOptions = ["Basic", "Premium", "Enterprise"];
   var serviceOptions = [
@@ -11,7 +12,9 @@ export function createSchema(modemOptions: string[]) {
   return {
     type: "object",
     properties: {
+      crmid: { type: "number" },
       firstName: { type: "string", minLength: 2 },
+      lastName: { type: "string", minLength: 2 },
       age: { type: "number" },
       modemType: { type: "string", enum: modemOptions },
       serviceType: { type: "string", enum: serviceOptions },
@@ -22,7 +25,7 @@ export function createSchema(modemOptions: string[]) {
       customerReference: { type: "string" },
       newConnection: { type: "string", enum: ["New", "Existing"] },
     },
-    required: ["firstName"],
+    required: ["firstName", "lastName"],
   };
 }
 
