@@ -1,4 +1,4 @@
-CREATE TABLE users (
+CREATE TABLE orders (
   id SERIAL PRIMARY KEY,
   crmid INTEGER,
   firstName VARCHAR(255) NOT NULL,

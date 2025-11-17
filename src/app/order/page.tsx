@@ -7,7 +7,7 @@ export default async function OrderList() {
 
   try {
     // todo: change to orders
-    const orders = await db.query("SELECT * FROM users");
+    const orders = await db.query("SELECT * FROM orders");
     return (
       <div>
         <div>

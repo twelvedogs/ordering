@@ -6,8 +6,8 @@ import {
   materialCells,
   materialRenderers,
 } from "@jsonforms/material-renderers";
-import { createSchema } from "../../schemas/user";
-//import { uischema } from "../schemas/user";
+import { createSchema } from "../../schemas/order";
+//import { uischema } from "../schemas/order";
 
 interface OrderFormClientProps {
   modemOptions: string[];
@@ -26,7 +26,7 @@ export default function OrderFormClient({
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      const response = await fetch("/api/users", {
+      const response = await fetch("/api/order", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -36,11 +36,11 @@ export default function OrderFormClient({
 
       if (response.ok) {
         const result = await response.json();
-        console.log("User saved:", result);
-        alert("User saved successfully!");
+        console.log("order saved:", result);
+        alert("order saved successfully!");
         // Optionally, redirect or show a success message
       } else {
-        console.error("Failed to save user:", response.statusText);
+        console.error("Failed to save order:", response.statusText);
         // Optionally, show an error message
       }
     } catch (error) {
@@ -58,7 +58,7 @@ export default function OrderFormClient({
         cells={materialCells}
         onChange={({ data }) => setData(data)}
       />
-      <button type="submit">Save User</button>
+      <button type="submit">Save order</button>
       <pre>{JSON.stringify(data, null, 2)}</pre>
     </form>
   );

@@ -25,12 +25,12 @@ export async function POST(request: Request) {
   if (!firstName || !lastName) {
     return NextResponse.json(
       { error: "First name and last name are required." },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   const query = `
-    INSERT INTO users (
+    INSERT INTO orders (
       crmid, firstName, lastName, age, modemType, serviceType, plan, quota,
       speed, contract, customerReference, newConnection
     ) VALUES (
@@ -60,8 +60,8 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("Database error:", error);
     return NextResponse.json(
-      { error: "Failed to save user data." },
-      { status: 500 }
+      { error: "Failed to save order data." },
+      { status: 500 },
     );
   }
 }

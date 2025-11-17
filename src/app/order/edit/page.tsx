@@ -10,7 +10,7 @@ export default async function OrderPage({ searchParams }) {
 
   try {
     const orderId = sp.id;
-    const orderQuery = await db.query("SELECT * FROM users WHERE crmid = $1", [
+    const orderQuery = await db.query("SELECT * FROM orders WHERE crmid = $1", [
       orderId,
     ]);
     const order = orderQuery.rows[0];
