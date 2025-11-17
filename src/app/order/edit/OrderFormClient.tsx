@@ -11,12 +11,14 @@ import { createSchema } from "../../schemas/user";
 
 interface OrderFormClientProps {
   modemOptions: string[];
+  order?: any;
 }
 
 export default function OrderFormClient({
   modemOptions,
+  order,
 }: OrderFormClientProps) {
-  const [data, setData] = useState({});
+  const [data, setData] = useState(order || {});
 
   // Create schema with dynamic modem options
   const schema = createSchema(modemOptions);

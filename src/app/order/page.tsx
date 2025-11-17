@@ -16,6 +16,8 @@ export default async function OrderList() {
         <div>
           {orders.rows.map((order) => (
             <div key={order.id}>
+              should probably open a popup
+              <a href={`/order/edit?id=${order.id}`}>Edit</a>
               {Object.entries(order).map(([key, value]) => (
                 <p key={key}>
                   {key}: {String(value)}

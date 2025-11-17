@@ -1,5 +1,6 @@
 // order schema
 // todo: break out customer details into separate schema
+// todo: i'm not sure how to store the schemas really, maybe in the database?
 export function createSchema(modemOptions: string[]) {
   var planOptions = ["Basic", "Premium", "Enterprise"];
   var serviceOptions = [
