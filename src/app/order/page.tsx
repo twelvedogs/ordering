@@ -1,24 +1,21 @@
-import React from "react";
-import { getDatabase } from "@/app/lib/db";
+import * as db from "../lib/db";
 
-// Server Component - fetches data
-export default async function OrderList() {
-  const db = getDatabase();
-
+export default async function orderList() {
   try {
-    // todo: change to orders
-    const orders = await db.query("SELECT * FROM orders");
+    const orders = await db.getAll("orders");
     return (
       <div>
+        <div>Current Orders</div>
         <div>
           <a href="/order/edit">new</a>
         </div>
         <div>
-          {orders.rows.map((order) => (
-            <div key={order.id}>
-              should probably open a popup
-              <a href={`/order/edit?id=${order.id}`}>Edit</a>
-              {Object.entries(order).map(([key, value]) => (
+          {orders.map((ord) => (
+            <div key={ord._id.toString()}>
+              <hr />
+              should probably open a popup -{" "}
+              <a href={`/order/edit?_id=${ord._id}`}>Edit</a>
+              {Object.entries(ord).map(([key, value]) => (
                 <p key={key}>
                   {key}: {String(value)}
                 </p>
@@ -30,7 +27,6 @@ export default async function OrderList() {
     );
   } catch (error) {
     console.error("Database error:", error);
-    // Fallback to default options on error
     return <div>Error fetching orders</div>;
   } finally {
     // dunno how it's calling this before the previous await finishes

@@ -6,8 +6,11 @@ import {
   materialCells,
   materialRenderers,
 } from "@jsonforms/material-renderers";
-import { createSchema } from "../../schemas/order";
-//import { uischema } from "../schemas/order";
+import { createSchema } from "@/app/schemas/order";
+
+// you have to be careful including server side code in client side code
+// as it will throw a bunch of include not found shit like with mongo and
+// the tls shit
 
 interface OrderFormClientProps {
   modemOptions: string[];
@@ -26,7 +29,7 @@ export default function OrderFormClient({
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      const response = await fetch("/api/order", {
+      const response = await fetch("/api/orders", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -39,6 +42,7 @@ export default function OrderFormClient({
         console.log("order saved:", result);
         alert("order saved successfully!");
         // Optionally, redirect or show a success message
+        window.location.replace("/order/");
       } else {
         console.error("Failed to save order:", response.statusText);
         // Optionally, show an error message

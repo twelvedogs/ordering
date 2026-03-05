@@ -1,25 +1,47 @@
-import React from "react";
-import { getDatabase } from "@/app/lib/db";
+import { MongoClient, ObjectId } from "mongodb";
+import OrderFormClient from "./OrderFormClient";
+// import OrderFormClient from "@/app/order/edit/OrderFormClient";
+import { get } from "../../lib/db";
+// these @ things might break if a client tries to import a server component? ffik
+// import { get } from "@/app/schemas/order";
 
-import OrderFormClient from "@/app/order/edit/OrderFormClient";
 // Server Component - fetches data
-export default async function OrderPage({ searchParams }) {
+export default async function OrderPage({ searchParams = null }) {
   var sp = await searchParams;
+  // var sp = { _id: 1 };
   console.log("searchParams", sp);
-  const db = getDatabase();
 
   try {
-    const orderId = sp.id;
-    const orderQuery = await db.query("SELECT * FROM orders WHERE crmid = $1", [
-      orderId,
-    ]);
-    const order = orderQuery.rows[0];
-    console.log("order", order);
-    const modems = await db.query("SELECT * FROM modems");
-    const modemOptions = modems.rows.map((modemRow) => modemRow.model);
+    // todo: if no object id create new order
+    const orderId = sp._id;
+    // wonder if local can talk to mongo
+    // const uri = "mongodb://localhost:27017/crud";
+    // const client = new MongoClient(uri);
+    // const db = client.db("ordering");
+
+    // const order = await db
+    //   .collection("orders")
+    //   .findOne({ _id: new ObjectId(orderId) });
+
+    const order = get(new ObjectId(sp._id), "orders");
+    console.log(order);
+    // feels bad man, deep copy the object
+    const orderJson = JSON.parse(JSON.stringify(order));
+
+    // const modems = await db.collection("modems").find().toArray();
+    // let modemOptions = modems.map((modem) => modem.name);
+    // if (!modemOptions || modemOptions.length === 0) {
+    //  modemOptions = ["ASUS", "NETGEAR"];
+    //}
+    let modemOptions = ["ASUS", "NETGEAR"];
+    // i'm doing this the dumb way, should be able to pull the whole structure
+    // out of mongodb? might have to build it from dynamic parts of the schema?
+    // console.log(modems, modemOptions);
+
+    // insert the client side code
     return (
       <div>
-        <OrderFormClient order={order} modemOptions={modemOptions} />
+        <OrderFormClient order={orderJson} modemOptions={modemOptions} />
       </div>
     );
   } catch (error) {

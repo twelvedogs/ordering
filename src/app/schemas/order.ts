@@ -1,6 +1,8 @@
 // order schema
-// todo: break out customer details into separate schema
 // todo: i'm not sure how to store the schemas really, maybe in the database?
+// i think the best way is to specify them in code, maybe use mongoose but
+// i don't really see the need for that, depends on how i end up doing them i guess
+// would be good to have more knowledge of what mongoose is
 export function createSchema(modemOptions: string[]) {
   var planOptions = ["Basic", "Premium", "Enterprise"];
   var serviceOptions = [
@@ -13,6 +15,7 @@ export function createSchema(modemOptions: string[]) {
   return {
     type: "object",
     properties: {
+      orderId: { type: "number" },
       crmid: { type: "number" },
       firstName: { type: "string", minLength: 2 },
       lastName: { type: "string", minLength: 2 },
@@ -29,37 +32,3 @@ export function createSchema(modemOptions: string[]) {
     required: ["firstName", "lastName"],
   };
 }
-
-// export const uischema = {
-//   type: "VerticalLayout",
-//   elements: [
-//     { type: "Control", scope: "#/properties/firstName" },
-//     { type: "Control", scope: "#/properties/age" },
-//     { type: "Control", scope: "#/properties/serviceType" },
-//     { type: "Control", scope: "#/properties/plan" },
-//     { type: "Control", scope: "#/properties/quota" },
-//     { type: "Control", scope: "#/properties/speed" },
-//     { type: "Control", scope: "#/properties/contract" },
-//     { type: "Control", scope: "#/properties/customerReference" },
-//     {
-//       type: "Control",
-//       scope: "#/properties/newConnection",
-//       oneOf: [
-//         {
-//           const: "new",
-//           title: "New Connection",
-//         },
-//         {
-//           const: "existing",
-//           title: "Churn Existing Connection",
-//         },
-//       ],
-//     },
-//     { type: "Control", scope: "#/properties/connectionFee" },
-//     {
-//       type: "Control",
-//       scope: "#/properties/modemType",
-//       options: { autocomplete: true },
-//     },
-//   ],
-// };
