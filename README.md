@@ -4,31 +4,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ### Prerequisites
 
-This project uses PostgreSQL as the database. Make sure you have PostgreSQL installed and running on your system.
-
-### Database Setup
-
-1. Create a PostgreSQL database named `ordering`:
-
-```bash
-createdb ordering
-```
-
-2. Copy the example environment file and configure your database connection:
-
-```bash
-cp .env.local.example .env.local
-```
-
-3. Edit `.env.local` with your PostgreSQL credentials:
-
-```env
-POSTGRES_HOST=localhost
-POSTGRES_PORT=5432
-POSTGRES_DB=ordering
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=your_password
-```
+mongodb
 
 ### Quick Start Commands
 

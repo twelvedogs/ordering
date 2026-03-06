@@ -1,0 +1,15 @@
+  const {
+    orderId,
+    crmid = null,
+    firstName,
+    lastName,
+    age = null,
+    modemType = null,
+    serviceType = null,
+    plan = null,
+    quota = null,
+    speed = null,
+    contract = null,
+    customerReference = null,
+    newConnection = null,
+  } = data;

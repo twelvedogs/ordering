@@ -1,4 +1,4 @@
-import * as db from "../lib/db";
+import * as db from "../lib/models/order";
 
 export default async function orderList() {
   try {
@@ -10,12 +10,12 @@ export default async function orderList() {
           <a href="/order/edit">new</a>
         </div>
         <div>
-          {orders.map((ord) => (
-            <div key={ord._id.toString()}>
+          {orders.map((order) => (
+            <div key={order._id.toString()}>
               <hr />
-              should probably open a popup -{" "}
-              <a href={`/order/edit?_id=${ord._id}`}>Edit</a>
-              {Object.entries(ord).map(([key, value]) => (
+              not sure how to switch to edit func, probably just replace list -{" "}
+              <a href={`/order/edit?_id=${order._id}`}>Edit</a>
+              {Object.entries(order).map(([key, value]) => (
                 <p key={key}>
                   {key}: {String(value)}
                 </p>
@@ -28,9 +28,5 @@ export default async function orderList() {
   } catch (error) {
     console.error("Database error:", error);
     return <div>Error fetching orders</div>;
-  } finally {
-    // dunno how it's calling this before the previous await finishes
-    // await db.end();
-    // db.close();
   }
 }

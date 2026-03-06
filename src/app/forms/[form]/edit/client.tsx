@@ -7,43 +7,40 @@ import {
   materialRenderers,
 } from "@jsonforms/material-renderers";
 
-// you have to be careful including server side code in client side code
-// as it will throw a bunch of include not found shit like with mongo and
-// the tls shit
-
-interface OrderFormClientProps {
+interface ClientProps {
   schema?: object;
-  order?: any;
+  document?: any;
+  form: string;
 }
 
 // this is a client side function, stop making db calls in it!
-// this could probably be even more generic
-export default function OrderFormClient({
+export default function Client({
   schema,
-  order,
-}: OrderFormClientProps) {
-  const [data, setData] = useState(order || {});
+  document,
+  form
+}: ClientProps) {
+  const [data, setData] = useState(document || {});
 
   // handle save click event
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      const response = await fetch("/api/orders", {
+      const response = await fetch("/api/crud", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({form, data}),
       });
 
       if (response.ok) {
         const result = await response.json();
-        console.log("order saved:", result);
-        window.location.replace("/order/");
+        console.log(`${form} saved:`, result);
+        alert('Form Saved');
+        window.location.replace(`/forms/${form}/`);
       } else {
-        console.error("Failed to save order:", response.statusText);
-        alert('Failed to save order');
-        // Optionally, show an error message
+        console.error(`Failed to save ${form}:`, response.statusText);
+        alert(`Failed to save ${form}`);
       }
     } catch (error) {
       console.error("An error occurred:", error);
@@ -60,7 +57,7 @@ export default function OrderFormClient({
         cells={materialCells}
         onChange={({ data }) => setData(data)}
       />
-      <button type="submit">Save order</button>
+      <button type="submit">Save {form}</button>
       <pre>{JSON.stringify(data, null, 2)}</pre>
     </form>
   );

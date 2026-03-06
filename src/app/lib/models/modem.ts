@@ -1,17 +1,15 @@
 import * as jsonschema from "jsonschema";
+import * as order from "../../schemas/order";
 import { ObjectId } from "mongodb";
-import { ConnectionPool } from "./ConnectionPool";
-import getSchema from "../schemas/schemas";
+import { ConnectionPool } from "../ConnectionPool";
 
 // Initialize pool when module loads
 const pool = ConnectionPool.getInstance();
 
 // Initialize the connection pool when the module is loaded
-// this is super flakey and doesn't work 90% of the time lol
-await (async () => {
+(async () => {
   try {
     await pool.initialize();
-    console.log('init pool');
   } catch (error) {
     console.error('Failed to initialize MongoDB connection pool:', error);
   }
@@ -20,13 +18,12 @@ await (async () => {
 export async function save(data: any, collection: string) {
   try {
     // Validate data against schema
-    // todo: get correct schema if collection isn't "orders"
-    const schema = await getSchema(collection);
+    const schema = await order.createSchema();
     const validation = jsonschema.validate(data, schema);
     if (validation.errors.length > 0) {
       throw new Error(`Validation failed: ${JSON.stringify(validation.errors)}`);
     }
-    
+
     const db = pool.getDatabase();
 
     // Ensure _id is properly converted to ObjectId
@@ -58,7 +55,6 @@ export async function save(data: any, collection: string) {
 // probably shouldn't have 2 different return types
 export async function get(_id: ObjectId | string | null = null, collection: string) {
   try {
-    console.log('get database')
     const db = pool.getDatabase();
     let result = null;
     if (_id) {
