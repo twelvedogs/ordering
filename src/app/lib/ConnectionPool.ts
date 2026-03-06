@@ -1,10 +1,10 @@
 import { MongoClient, Db } from "mongodb";
 
-// Connection pool manager class
 export class ConnectionPool {
     private static instance: ConnectionPool;
     private client: MongoClient | null = null;
     private db: Db | null = null;
+    private initPromise: Promise<void> | null = null;
     private connectionString: string;
     private poolSize: number;
 
@@ -13,7 +13,6 @@ export class ConnectionPool {
         this.poolSize = poolSize;
     }
 
-    // Get singleton instance
     public static getInstance(): ConnectionPool {
         if (!ConnectionPool.instance) {
             const uri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/crud";
@@ -22,10 +21,24 @@ export class ConnectionPool {
         return ConnectionPool.instance;
     }
 
-    // Initialize connection pool
     public async initialize(): Promise<void> {
-        console.log('initialize has client? ' + this.client !==null)
-        if (!this.client) {
+        // Use double-checked locking pattern to avoid concurrent initialization
+        if (this.client) {
+            return; // Already initialized
+        }
+
+        // If initialization is in progress, wait for it
+        if (this.initPromise) {
+            return this.initPromise;
+        }
+
+        // Start initialization
+        this.initPromise = this._connect();
+        await this.initPromise;
+    }
+
+    private async _connect(): Promise<void> {
+        try {
             this.client = new MongoClient(this.connectionString, {
                 maxPoolSize: this.poolSize,
                 minPoolSize: 5,
@@ -34,10 +47,15 @@ export class ConnectionPool {
             });
             await this.client.connect();
             this.db = this.client.db("ordering");
+            console.log("✓ MongoDB connection pool initialized");
+        } catch (error) {
+            this.client = null;
+            this.db = null;
+            this.initPromise = null;
+            throw error;
         }
     }
 
-    // Get database instance
     public getDatabase(): Db {
         if (!this.db) {
             throw new Error("Database not initialized. Call initialize() first.");
@@ -45,7 +63,6 @@ export class ConnectionPool {
         return this.db;
     }
 
-    // Get MongoDB client
     public getClient(): MongoClient {
         if (!this.client) {
             throw new Error("Client not initialized. Call initialize() first.");
@@ -53,20 +70,21 @@ export class ConnectionPool {
         return this.client;
     }
 
-    // Close all connections
     public async close(): Promise<void> {
         if (this.client) {
-            console.log('Closing DB connection!');
+            console.log("✓ Closing MongoDB connection pool");
             await this.client.close();
             this.client = null;
             this.db = null;
+            this.initPromise = null;
         }
     }
 
-    // Check connection status
     public async isHealthy(): Promise<boolean> {
-        if (!this.client) return false;
         try {
+            if (!this.client) {
+                return false;
+            }
             await this.client.db("admin").command({ ping: 1 });
             return true;
         } catch (error) {

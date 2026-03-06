@@ -4,10 +4,12 @@ import getSchema from "../../../schemas/schemas";
 import Client from "./client";
 
 // server side of the edit page
-export default async function Page({ params }: { params: { form: string, _id: string | null } })  {
+export default async function Page({ params, searchParams }: { params: { form: string }, searchParams: { _id?: string } })  {
   const sp = await params;
+  const sp2 = await searchParams;
   try {
-    const doc = await db.get(new ObjectId(sp._id), sp.form);
+    console.log('edit page received params: ', sp, 'query _id:', sp2._id)
+    const doc = await db.get(new ObjectId(sp2._id), sp.form);
     // feels bad man, deep copy the object or else nextjs barfs when you pass it
     // to the client
     const doc_copy = JSON.parse(JSON.stringify(doc));

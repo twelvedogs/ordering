@@ -1,49 +1,39 @@
 import * as jsonschema from "jsonschema";
 import { ObjectId } from "mongodb";
-import { ConnectionPool } from "./ConnectionPool";
+
 import getSchema from "../schemas/schemas";
-
-// Initialize pool when module loads
-const pool = ConnectionPool.getInstance();
-
-// Initialize the connection pool when the module is loaded
-// this is super flakey and doesn't work 90% of the time lol
-await (async () => {
-  try {
-    await pool.initialize();
-    console.log('init pool');
-  } catch (error) {
-    console.error('Failed to initialize MongoDB connection pool:', error);
-  }
-})();
+import clientPromise from "./mongodb"
 
 export async function save(data: any, collection: string) {
   try {
+    
     // Validate data against schema
-    // todo: get correct schema if collection isn't "orders"
     const schema = await getSchema(collection);
     const validation = jsonschema.validate(data, schema);
     if (validation.errors.length > 0) {
       throw new Error(`Validation failed: ${JSON.stringify(validation.errors)}`);
     }
     
-    const db = pool.getDatabase();
+    const client = await clientPromise;
+    const db = client.db("ordering");
 
     // Ensure _id is properly converted to ObjectId
-    let documentId = data._id;
+    console.log(data._id);
     if (typeof data._id === 'string') {
       try {
-        documentId = new ObjectId(data._id);
+        data._id = new ObjectId(data._id);
       } catch (error) {
         throw new Error('Invalid ObjectId format');
       }
+    }else{
+      data._id = new ObjectId(); // todo: does mongo add this automatically if it's not set?
     }
-
+    
     // Update or insert the document
     const result = await db
       .collection(collection)
       .updateOne(
-        { _id: documentId },
+        { _id: data._id },
         { $set: data },
         { upsert: true }
       );
@@ -58,8 +48,9 @@ export async function save(data: any, collection: string) {
 // probably shouldn't have 2 different return types
 export async function get(_id: ObjectId | string | null = null, collection: string) {
   try {
-    console.log('get database')
-    const db = pool.getDatabase();
+    const client = await clientPromise;
+    const db = client.db("ordering");
+
     let result = null;
     if (_id) {
       // Convert string _id to ObjectId if needed
@@ -86,8 +77,10 @@ export async function get(_id: ObjectId | string | null = null, collection: stri
 }
 
 export async function del(_id: ObjectId, collection: string) {
-    try {
-      const db = pool.getDatabase();
+  try {
+    const client = await clientPromise;
+    const db = client.db("ordering");
+
     if (!_id) {
       throw new Error('Missing _id for deletion');
     }

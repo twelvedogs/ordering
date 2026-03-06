@@ -15,7 +15,7 @@ export default async function Page({ params }: { params: { form: string } }) {
         </div>
         <div>
           {items.map((item) => (
-            <div key={item._id.toString()}>
+            <div key={item._id?.toString()}>
               <hr />
               not sure how to switch to edit func, probably just replace list -{" "}
               this should probably be handled in routes

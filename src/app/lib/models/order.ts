@@ -55,6 +55,7 @@ export async function save(data){
 
     jsonschema.validate(data, order.createSchema());
 
+    // todo: there's issues here i don't understand
     data._id = new ObjectId(data._id);
 
     let result = await db

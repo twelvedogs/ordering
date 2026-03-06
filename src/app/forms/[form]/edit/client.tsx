@@ -19,6 +19,7 @@ export default function Client({
   document,
   form
 }: ClientProps) {
+  console.log('loading document', document);
   const [data, setData] = useState(document || {});
 
   // handle save click event
@@ -57,6 +58,7 @@ export default function Client({
         cells={materialCells}
         onChange={({ data }) => setData(data)}
       />
+        <input type="text" value={data._id}></input>
       <button type="submit">Save {form}</button>
       <pre>{JSON.stringify(data, null, 2)}</pre>
     </form>
