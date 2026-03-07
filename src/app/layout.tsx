@@ -27,6 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <div><a href="/">Home</a> | <a href="/forms/Modems/">Modems</a> | <a href="/forms/Orders/">Orders</a> | <a href="/forms/Customers/">Customers</a></div>
         <Providers>{children}</Providers>
       </body>
     </html>

@@ -1,9 +1,10 @@
 import * as db from "../../lib/db";
-
+import View from "./view"
+import React from "react";
 export default async function Page({ params }: { params: { form: string } }) {
   const p = await params;
   const form = p.form;
-  console.log('forms thing ', form);
+
   try {
     const sp = await params;
     const items = await db.get(null, form);
@@ -15,11 +16,13 @@ export default async function Page({ params }: { params: { form: string } }) {
         </div>
         <div>
           {items.map((item) => (
-            <div key={item._id?.toString()}>
+            <div key={item.id?.toString()}>
               <hr />
-              not sure how to switch to edit func, probably just replace list -{" "}
+              
               this should probably be handled in routes
-              <a href={`/forms/${form}/edit?_id=${item._id}`}>Edit</a>
+              <a href={`/forms/${form}/edit?id=${item.id}`}>Edit</a> | 
+              <a href={`/forms/${form}/edit?id=${item.id}`}>Delete</a> | 
+              {/* <a onClick={showItem} data-id={item.id}>View</a> */}
               {Object.entries(item).map(([key, value]) => (
                 <p key={key}>
                   {key}: {String(value)}
@@ -28,6 +31,8 @@ export default async function Page({ params }: { params: { form: string } }) {
             </div>
           ))}
         </div>
+        <pre>{JSON.stringify(items, null, 2)}</pre>
+        {/* <View schema={{}} document={viewItem} form="modems" ></View> */}
       </div>
     );
   } catch (error) {

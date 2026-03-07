@@ -1,74 +1,77 @@
 import * as jsonschema from "jsonschema";
-import { ObjectId } from "mongodb";
-
+import { v4 as uuidv4 } from "uuid";
 import getSchema from "../schemas/schemas";
-import clientPromise from "./mongodb"
+import {Pool, Client} from "pg";
+
 
 export async function save(data: any, collection: string) {
   try {
-    
     // Validate data against schema
+    collection = collection.toLowerCase();
     const schema = await getSchema(collection);
     const validation = jsonschema.validate(data, schema);
-    if (validation.errors.length > 0) {
-      throw new Error(`Validation failed: ${JSON.stringify(validation.errors)}`);
+    if (validation.errors?.length > 0) {
+      // throw new Error(`Validation failed: ${JSON.stringify(validation.errors)}`);
+      return { errors: validation.errors };
+      // console.log(`validation errors with ${collection}`, validation.errors, data);
     }
-    
-    const client = await clientPromise;
-    const db = client.db("ordering");
 
-    // Ensure _id is properly converted to ObjectId
-    console.log(data._id);
-    if (typeof data._id === 'string') {
-      try {
-        data._id = new ObjectId(data._id);
-      } catch (error) {
-        throw new Error('Invalid ObjectId format');
-      }
-    }else{
-      data._id = new ObjectId(); // todo: does mongo add this automatically if it's not set?
+    const client = new Client();
+    await client.connect();
+
+    // Ensure id is a UUID string
+    let docId = data.id;
+    if (!docId) {
+      docId = uuidv4();
+      data.id = docId;
+    } else if (typeof docId === 'string') {
+      data.id = docId;
     }
-    
-    // Update or insert the document
-    const result = await db
-      .collection(collection)
-      .updateOne(
-        { _id: data._id },
-        { $set: data },
-        { upsert: true }
-      );
-    console.log(`Save ${collection} result`, result);
-    return result;
+
+    const query = `
+      INSERT INTO documents (id, collection, data, created_at, updated_at)
+      VALUES ($1, $2, $3, NOW(), NOW())
+      ON CONFLICT (id, collection) 
+      DO UPDATE SET data = $3, updated_at = NOW()
+      RETURNING *;
+    `;
+
+    const result = await client.query(query, [docId, collection, JSON.stringify(data)]);
+    // console.log(`Save ${collection} result`, result.rows[0]);
+    await client.end();
+    return { result: result.rows[0] };
   } catch (error) {
     console.error(`Error saving ${collection}:`, error);
     throw error;
   }
 }
 
-// probably shouldn't have 2 different return types
-export async function get(_id: ObjectId | string | null = null, collection: string) {
+export async function get(id: string | null = null, collection: string) {
   try {
-    const client = await clientPromise;
-    const db = client.db("ordering");
+    const client = new Client();
+    await client.connect();
 
+    console.log(`get with id: ${id} and collection: ${collection}`)
+    collection = collection.toLowerCase();
     let result = null;
-    if (_id) {
-      // Convert string _id to ObjectId if needed
-      let objectId: ObjectId;
-      if (typeof _id === 'string') {
-        objectId = new ObjectId(_id);
-      } else {
-        objectId = _id as ObjectId;
-      }
-
-      result = await db
-        .collection(collection)
-        .findOne({ _id: objectId });
+    if (id) {
+      const query = `
+        SELECT id, data FROM documents 
+        WHERE id = $1 AND collection = $2
+      `;
+      const queryResult = await client.query(query, [id, collection]);
+      console.log('queryResult: ', result);
+      result = queryResult.rows[0]?.data || null;
     } else {
-      const cursor = db.collection(collection).find({});
-      result = await cursor.toArray();
-    }
+      const query = `
+        SELECT id, data FROM documents 
+        WHERE collection = $1
+      `;
+      const queryResult = await client.query(query, [collection]);
+      result = queryResult.rows.map(row => ({ id: row.id, ...row.data }));
 
+    }
+    await client.end();
     return result;
   } catch (error) {
     console.error(`Error getting ${collection}:`, error);
@@ -76,32 +79,28 @@ export async function get(_id: ObjectId | string | null = null, collection: stri
   }
 }
 
-export async function del(_id: ObjectId, collection: string) {
+export async function del(id: string, collection: string) {
   try {
-    const client = await clientPromise;
-    const db = client.db("ordering");
-
-    if (!_id) {
-      throw new Error('Missing _id for deletion');
+    const client = new Client();
+    await client.connect();
+    collection = collection.toLowerCase();
+    if (!id) {
+      throw new Error('Missing id for deletion');
     }
 
-    let objectId: ObjectId;
-    if (typeof _id === 'string') {
-      if (!ObjectId.isValid(_id)) {
-        throw new Error('Invalid ObjectId format');
-      }
-      objectId = new ObjectId(_id);
-    } else if (_id instanceof ObjectId) {
-      objectId = _id;
-    } else {
-      throw new Error('Invalid _id type');
-    }
+    const query = `
+      DELETE FROM documents 
+      WHERE id = $1 AND collection = $2
+      RETURNING *;
+    `;
 
-    const result = await db.collection(collection).deleteOne({ _id: objectId });
+    const result = await client.query(query, [id, collection]);
 
-    return result;
+    console.log('delete result', result.rowCount);
+    await client.end();
+    return { acknowledged: true, deletedCount: result.rowCount };
   } catch (error) {
-    console.error(`Error getting ${collection}:`, error);
+    console.error(`Error deleting from ${collection}:`, error);
     throw error;
   }
 }
