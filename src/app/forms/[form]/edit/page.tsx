@@ -5,30 +5,26 @@ import Client from "./client";
 
 // server side of the edit page
 export default async function Page({ params, searchParams }: { params: { form: string }, searchParams: { _id?: string } })  {
-  const sp = await params;
-  const sp2 = await searchParams;
+  const p = {...await params, ...await searchParams};
   try {
-    console.log('edit page received params: ', sp, 'query _id:', sp2._id)
-    const doc = await db.get(new ObjectId(sp2._id), sp.form);
+    const doc = await db.get(new ObjectId(p._id), p.form);
     // feels bad man, deep copy the object or else nextjs barfs when you pass it
-    // to the client
+    // to the client because of too complex properties
     const doc_copy = JSON.parse(JSON.stringify(doc));
 
     // i'm doing this the dumb way, should be able to pull the whole structure
     // out of mongodb? might have to build it from dynamic parts of the schema?
-    const schema = await getSchema(sp.form);
-
-    console.log(schema);
+    const schema = await getSchema(p.form);
 
     // insert the client side code
     return (
       <div>
-        <Client document={doc_copy} schema={schema} form={sp.form} />
+        <Client document={doc_copy} schema={schema} form={p.form} />
       </div>
     );
   } catch (error) {
     console.error("Database error:", error);
     // Fallback to default options on error
-    return <Client form={sp.form} />;
+    return <Client form={p.form} />;
   }
 }
