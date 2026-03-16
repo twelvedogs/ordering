@@ -1,15 +1,11 @@
-podman run --detach --replace \
-	--name postgres \
-	-p 5432:5432 \
-	-e POSTGRES_USER=postgres \
-	-e POSTGRES_PASSWORD=postgres \
-	-e POSTGRES_DB=ordering \
-	-v /home/twelvedogs/podman/postgres/data:/var/lib/postgresql/data \
-	docker.io/library/postgres:16-alpine
+-- PostgreSQL Document Store Schema
 
-# Initialize database schema
-sleep 2
-podman exec postgres psql -U postgres -d ordering -c "
+CREATE DATABASE IF NOT EXISTS ordering;
+
+-- Connect to the ordering database
+\c ordering
+
+-- Create the main documents table
 CREATE TABLE IF NOT EXISTS documents (
     id UUID PRIMARY KEY,
     collection VARCHAR(255) NOT NULL,
@@ -18,7 +14,13 @@ CREATE TABLE IF NOT EXISTS documents (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(id, collection)
 );
+
+-- Create indexes for better query performance
 CREATE INDEX IF NOT EXISTS idx_documents_collection ON documents(collection);
 CREATE INDEX IF NOT EXISTS idx_documents_collection_created ON documents(collection, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_documents_data_gin ON documents USING GIN (data);
-"
+
+-- Grant permissions (adjust user as needed)
+GRANT ALL PRIVILEGES ON DATABASE ordering TO postgres;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO postgres;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO postgres;

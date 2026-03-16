@@ -15,7 +15,8 @@ export async function createSchema(modemOptions: string[] = null) {
   ];
 
   if(modemOptions === null){
-    modemOptions = await db.get(null, "modems");
+    // todo: pull in modems from db, currently this db call throws big errors
+    modemOptions = []; //await db.get(null, "modems");
   }
 
   return {

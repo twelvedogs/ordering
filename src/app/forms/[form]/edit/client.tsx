@@ -21,6 +21,7 @@ export default function Client({
 }: ClientProps) {
   console.log('loading document', document);
   const [data, setData] = useState(document || {});
+  //const [data, setData] = useState({});
 
   // handle save click event
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -58,7 +59,7 @@ export default function Client({
         cells={materialCells}
         onChange={({ data }) => setData(data)}
       />
-        <input type="text" value={data._id}></input>
+        <input type="text" value={data.id || ''} readOnly></input>
       <button type="submit">Save {form}</button>
       <pre>{JSON.stringify(data, null, 2)}</pre>
     </form>
