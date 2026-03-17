@@ -22,6 +22,7 @@ export default function Client({
   console.log('loading document', document);
   console.log('loading schema', schema);
   const [data, setData] = useState(document || {});
+  const [errors, setErrors] = useState([]);
   //const [data, setData] = useState({});
 
   // handle save click event
@@ -39,7 +40,6 @@ export default function Client({
       if (response.ok) {
         const result = await response.json();
         console.log(`${form} saved:`, result);
-        //alert('Form Saved');
         // todo: some kind of feedback
         // todo: put the redirection the return object
         window.location.replace(`/forms/${form}/`);
@@ -66,11 +66,14 @@ export default function Client({
         data={data}
         renderers={materialRenderers}
         cells={materialCells}
-        onChange={({ data }) => setData(data)}
+        onChange={({ data, errors }) => {setData(data); setErrors(errors)}}
       />
         <input type="text" value={data.id || ''} readOnly></input>
-      <button type="submit">Save {form}</button>
+      <button type="submit" disabled={errors.length > 0}>Save {form}</button>
+      <p>Data</p>
       <pre>{JSON.stringify(data, null, 2)}</pre>
+      <p>errors</p>
+      <pre>{JSON.stringify(errors, null, 2)}</pre>
     </form>
   );
 }

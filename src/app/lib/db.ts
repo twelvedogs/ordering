@@ -11,6 +11,7 @@ export async function save(data: any, collection: string) {
     let schema = await getSchema(collection);
     await loadDynamic(schema);
     console.log('checking with updated schema')
+    // jsonforms uses ajv for validation, probably use the same thing instead of this
     const validation = jsonschema.validate(data, schema);
     if (validation.errors?.length > 0) {
       console.log(`validation errors with ${collection}`, validation.errors, data);
