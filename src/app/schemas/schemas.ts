@@ -8,6 +8,7 @@ schemas['modems'] = modem.createSchema();
 schemas['orders'] = order.createSchema();
 
 export default async function getSchema(collection: string){
+    
     return await schemas[collection];
 }
 

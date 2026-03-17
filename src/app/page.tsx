@@ -8,9 +8,6 @@ export default function Home() {
     <div className={styles.page}>
       <main className={styles.main}>
         <div className={styles.ctas}>
-          <Link href="/order?collection=orders" className="btn btn-primary">
-            Go to order list Page
-          </Link>
           <br></br>
           <Link href="/forms/modems" className="btn btn-primary">
             Go to modems Page
