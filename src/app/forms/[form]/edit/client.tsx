@@ -23,7 +23,6 @@ export default function Client({
   console.log('loading schema', schema);
   const [data, setData] = useState(document || {});
   const [errors, setErrors] = useState([]);
-  //const [data, setData] = useState({});
 
   // handle save click event
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
