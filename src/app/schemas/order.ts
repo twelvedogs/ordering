@@ -13,6 +13,7 @@ export async function createSchema(modemOptions: string[] = null) {
 
   if(modemOptions === null){
     modemOptions = ['None Available'];
+    // maybe modemOptions = @@@modems or something to indicate a db field
   }
 
   return {

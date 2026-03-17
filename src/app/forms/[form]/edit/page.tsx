@@ -1,5 +1,5 @@
-import * as db from "../../../lib/db";
-import getSchema from "../../../schemas/schemas";
+import * as db from "@/app/lib/db";
+import getSchema from "@/app/schemas/schemas";
 import Client from "./client";
 // @ works now lol?
 import { loadDynamic } from "@/app/schemas/order";
