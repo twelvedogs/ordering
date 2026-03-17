@@ -2,18 +2,20 @@ import * as jsonschema from "jsonschema";
 import { v4 as uuidv4 } from "uuid";
 import getSchema from "../schemas/schemas";
 import {Pool, Client} from "pg";
-
+import { loadDynamic } from "@/app/schemas/order";
 
 export async function save(data: any, collection: string) {
   try {
     // Validate data against schema
     collection = collection.toLowerCase();
-    const schema = await getSchema(collection);
+    let schema = await getSchema(collection);
+    await loadDynamic(schema);
+    console.log('checking with updated schema')
+    // jsonforms uses ajv for validation, probably use the same thing instead of this
     const validation = jsonschema.validate(data, schema);
     if (validation.errors?.length > 0) {
-      // throw new Error(`Validation failed: ${JSON.stringify(validation.errors)}`);
+      console.log(`validation errors with ${collection}`, validation.errors, data);
       return { errors: validation.errors };
-      // console.log(`validation errors with ${collection}`, validation.errors, data);
     }
 
     const client = new Client();

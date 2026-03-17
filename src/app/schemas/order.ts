@@ -1,9 +1,6 @@
 import * as db from "../lib/db";
 // order schema
 // todo: i'm not sure how to store the schemas really, maybe in the database?
-// i think the best way is to specify them in code, maybe use mongoose but
-// i don't really see the need for that, depends on how i end up doing them i guess
-// would be good to have more knowledge of what mongoose can do
 // todo: allow datastores to be defined as enums
 export async function createSchema(modemOptions: string[] = null) {
   var planOptions = ["Basic", "Premium", "Enterprise"];
@@ -15,8 +12,7 @@ export async function createSchema(modemOptions: string[] = null) {
   ];
 
   if(modemOptions === null){
-    // todo: pull in modems from db, currently this db call throws big errors
-    modemOptions = []; //await db.get(null, "modems");
+    modemOptions = ['None Available'];
   }
 
   return {
@@ -38,4 +34,14 @@ export async function createSchema(modemOptions: string[] = null) {
     },
     required: ["firstName", "lastName"],
   };
+}
+
+// not sure why this is required, maybe i'm loading the schemas on the client
+// or before the app is initialised somewhere
+// loads database driven options
+export async function loadDynamic(schema){
+  let modems = await db.get(null, 'modems');
+  let modemSet = new Set(modems.map(modem => modem.name).filter((modemName) => modemName !== undefined));
+  schema.properties.modemType.enum = [...modemSet];
+  console.log('updated schema: ', schema);
 }

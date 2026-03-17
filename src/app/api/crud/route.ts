@@ -29,8 +29,9 @@ export async function POST(request: Request) {
   try {
     const result = await db.save(req.data, req.form);
     if (result.errors?.length > 0) {
+      // todo: not a 400 error
       return NextResponse.json(
-        { error: "First name and last name are required.", ok: false },
+        { error: "Form failed validation.", ok: false, errors: result.errors },
         { status: 400 }
       );
     }

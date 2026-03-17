@@ -18,11 +18,8 @@ export default async function Page({ params }: { params: { form: string } }) {
           {items.map((item) => (
             <div key={item.id?.toString()}>
               <hr />
-              
-              this should probably be handled in routes
-              <a href={`/forms/${form}/edit?id=${item.id}`}>Edit</a> | 
-              <a href={`/forms/${form}/edit?id=${item.id}`}>Delete</a> | 
-              {/* <a onClick={showItem} data-id={item.id}>View</a> */}
+              <a href={`/forms/${form}/edit?id=${item.id}`}>Edit</a> | <a href={`/forms/${form}/del?id=${item.id}`}>Delete</a>
+              {/* <a onClick={showItem} data-id={item.id}>View</a> - if you're doing state stuff it needs to be in client*/}
               {Object.entries(item).map(([key, value]) => (
                 <p key={key}>
                   {key}: {String(value)}
