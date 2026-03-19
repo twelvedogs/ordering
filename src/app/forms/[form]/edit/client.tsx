@@ -52,6 +52,7 @@ export default function Client({
 
         alert(`Failed to save ${form}\n${error_message}`);
       }
+      
     } catch (error) {
       console.error("An error occurred:", error);
     }

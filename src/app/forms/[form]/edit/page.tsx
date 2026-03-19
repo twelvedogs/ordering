@@ -2,7 +2,6 @@ import * as db from "@/app/lib/db";
 import getSchema from "@/app/schemas/schemas";
 import Client from "./client";
 // @ works now lol?
-import { loadDynamic } from "@/app/schemas/order";
 
 // server side of the edit page
 export default async function Page({ params, searchParams }: { params: { form: string }, searchParams: { id?: string } })  {
@@ -18,10 +17,12 @@ export default async function Page({ params, searchParams }: { params: { form: s
     // feels bad man, deep copy the object or else nextjs barfs when you pass it
     // to the client because of too complex properties
     const doc_copy = JSON.parse(JSON.stringify(doc));
-    const schema = await getSchema(form);
-    await loadDynamic(schema);
+
+    const schema = (await getSchema(form));
+    await schema.load();
+
     // insert the client side code
-    return ( 
+    return (
       <div>
         <Client document={doc_copy} schema={schema} form={form} />
       </div>

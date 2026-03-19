@@ -3,12 +3,13 @@ import * as modem from "./modem";
 import * as order from "./order";
 
 let schemas = {};
-schemas['customers'] = customer.createSchema();
-schemas['modems'] = modem.createSchema();
-schemas['orders'] = order.createSchema();
+schemas['customers'] = customer;
+schemas['modems'] = modem;
+schemas['orders'] = order;
 
 export default async function getSchema(collection: string){
-    
     return await schemas[collection];
 }
+
+
 
