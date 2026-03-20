@@ -1,37 +1,70 @@
+
 // not sure if this is the right object structure
 const Address = {
     type: "object",
     properties: {
         name: { type: "string" },
         line1: { type: "string" },
-        line2: { type: "string"},
+        line2: { type: "string" },
         postcode: { type: "number", minLength: 4 },
-        state: { type: "string"}
+        state: { type: "string" }
 
-    },required: [ "line1", "postcode", "state" ]
+    }, required: ["line1", "postcode", "state"]
 }
 
-export class Customer { 
+export class Customer {
     schema = {
         type: "object",
         properties: {
-            crmid: { type: "number" },
-            firstName: { type: "string", minLength: 2 },
-            lastName: { type: "string", minLength: 2 },
+            crmid: { type: "number", inputType: "text" },
+            firstName: { type: "string", minLength: 1 },
+            lastName: { type: "string", minLength: 1 },
             licenceNumber: { type: "string", readOnly: true },
-            dob: { type: "string", format: "date" },
+            dob: { type: "string", format: "date", inputType: "date" },
             created: { type: "string", format: "date" },
             passedCreditCheck: { type: "boolean" },
-            addresses: { type: "array", items: Address},
+            test: {
+                type: "string", 
+                inputType: "select",
+                oneOf: [
+                    { const: "t1", title: "test 1" }, 
+                    { const: "t2", title: "test 2" },
+                    { const: "t3", title: "test 3" },
+                    { const: "t4", title: "test 4" }
+                ]
+                
+            },
+            // todo: not sure what to do with this, the address list is like a list of info about the customer
+            //      but it's not a value in itself.  probably hide the field at least
+            addresses: { type: "array", items: Address },
             // use array index or should i add an id field to the address?
-            physicalAddress: { type: "number", 
-                options: { $ref: "#/properties/addresses"}
+            // this is silly by the way i'm solving a dumb problem, addresses does *not*
+            // need to be an array, however modems etc on order does
+            physicalAddress: {
+                type: "number",
+                inputType: "select",
+                oneOf: { $ref: "#/data/addresses" },
+                map: { 
+                    const: "id",
+                    title: "line1"
+                }
             },
-            postalAddress: { type: "number",
-                options: { $ref: "#/properties/addresses"}
+            postalAddress: {
+                type: "number",
+                inputType: "select",
+                oneOf: { $ref: "#/data/addresses" },
+                map: { 
+                    const: "id",
+                    title: "line1"
+                }
             },
-            billingAddress: { type: "number",
-                options: { $ref: "#/properties/addresses"}
+            billingAddress: {
+                type: "number",
+                oneOf: { $ref: "#/data/addresses" },
+                map: { 
+                    const: "id",
+                    title: "line1"
+                }
             },
         },
         required: ["firstName", "lastName"],
@@ -77,6 +110,13 @@ export class Customer {
                     {
                         type: "Control",
                         scope: "#/properties/passedCreditCheck",
+                    },
+                    {
+                        type: "Control",
+                        scope: "#/properties/test",  
+                        options: {
+                            format: "radio"
+                        }
                     },
                 ],
             },
@@ -165,6 +205,7 @@ export class Customer {
     };
 
     load = async () => {
-
+        console.log('loading customer')
+        
     }
 }

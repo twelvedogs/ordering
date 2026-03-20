@@ -8,6 +8,7 @@ import {
 } from "@jsonforms/material-renderers";
 import { JsonEditor } from 'json-edit-react'
 import { JsonSchema, UISchemaElement } from "@jsonforms/core";
+import $RefParser from "@apidevtools/json-schema-ref-parser";
 
 interface ClientProps {
     schema?: JsonSchema;
@@ -24,35 +25,29 @@ export default function Client({
     form
 }: ClientProps) {
     const [data, setData] = useState(document || {});
+    const [dschema, setSchema] = useState(schema || {});
+
     // form error object
     const [errors, setErrors] = useState([]);
-    // const [updatedSchema, setUpdatedSchema] = useState(schema);
 
-    // this is dumb just use $ref
-    // useEffect(() => {
-    //     if (data?.addresses && Array.isArray(data.addresses) && updatedSchema) {
-    //         const addressIds = data.addresses.map((addr: any, idx: number) => 
-    //             addr.id || `address-${idx}`
-    //         );
-            
-    //         // Create a deep copy and update the enum values
-    //         const newSchema = JSON.parse(JSON.stringify(updatedSchema));
-    //         if (newSchema.properties?.physicalAddress) {
-    //             newSchema.properties.physicalAddress.enum = addressIds;
-    //         }
-    //         if (newSchema.properties?.postalAddress) {
-    //             newSchema.properties.postalAddress.enum = addressIds;
-    //         }
-            
-    //         setUpdatedSchema(newSchema);
-    //     }
-    // }, [data?.addresses]);
+    const formChange = async ({ data, errors }: { data: any; errors: any[] }) => {
+        let updatedSchema = await $RefParser.dereference({ schema, data }, { mutateInputSchema: false }) as any;
+        setSchema(updatedSchema.schema);
+        setData(data);
+        setErrors(errors);
+    }
+
+    const updateState = (e) => {
+        // i'm getting tired
+        let datas = {...data};
+        datas[e.target.id]=e.target.value;
+        setData(datas);
+    }
 
     // handle save click event
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 
         // if(errors.length>0) return;
-
         event.preventDefault();
         try {
             const response = await fetch("/api/crud", {
@@ -75,7 +70,7 @@ export default function Client({
                 // {"error":"Form failed validation.","ok":false,"errors":[{"path":[],"property":"instance","message":"requires property \"name\"","schema":{"type":"object","properties":{"modemId":{"type":"number"},"name":{"type":"string","minLength":2},"price":{"type":"string","minLength":2},"brand":{"type":"number"},"active":{"type":"string"}},"required":["name","price"]},"instance":{"id":"96c76096-f8f7-494f-a19e-2d66639282c4"},"name":"required","argument":"name","stack":"instance requires property \"name\""},{"path":[],"property":"instance","message":"requires property \"price\"","schema":{"type":"object","properties":{"modemId":{"type":"number"},"name":{"type":"string","minLength":2},"price":{"type":"string","minLength":2},"brand":{"type":"number"},"active":{"type":"string"}},"required":["name","price"]},"instance":{"id":"96c76096-f8f7-494f-a19e-2d66639282c4"},"name":"required","argument":"price","stack":"instance requires property \"price\""}]}
                 let error_message = '';
                 // todo: don't use filter
-                if(result.errors)
+                if (result.errors)
                     error_message = result.errors.filter((error) => { error_message += `${error.argument}:  ${error.name}\n`; return true; });
 
                 alert(`Failed to save ${form}\n${error_message}`);
@@ -85,26 +80,67 @@ export default function Client({
             console.error("An error occurred:", error);
         }
     };
+    function camelCaseToWords(s: string) {
+        const result = s.replace(/([A-Z])/g, ' $1');
+        return result.charAt(0).toUpperCase() + result.slice(1);
+    }
+    // there's better json schema form generators but the weight and difficulty of bending them to my way of thinking isn't worth not
+    // writing 200 lines of code
+    function drawProps(obj, objName) {
+        let result = [];
+        console.log('Generating form');
+        for (const i in obj) {
+            if (Object.hasOwn(obj, i)) {
+                console.log(`i: ${i}`, obj[i])
+                if (obj[i].inputType) {
+                    switch (obj[i].inputType) {
+                        case "number":
+                            result.push(<div className="form-group"><label htmlFor={i}>{camelCaseToWords(i)}</label>
+                                <input className="form-control" data-field={i} type="number" id={i} onChange={updateState} value={data[i]}></input></div>);
+                            break;
+                        case "date":
+                            result.push(<div className="form-group"><label htmlFor={i}>{camelCaseToWords(i)}</label>
+                                <input className="form-control" data-field={i} type="date" id={i} onChange={updateState}></input></div>);
+                            break;
+                        case "file":
+                            result.push(<div className="form-group"><label htmlFor={i}>{camelCaseToWords(i)}</label>
+                                <input className="form-control" data-field={i} type="file" id={i} onChange={updateState}></input></div>);
+                            break;
+                        case "select":
+                            // if obj[i].map or something prolly
+                            // todo: on dereference map the fields
+                            result.push(<div className="form-group"><label htmlFor={i}>{camelCaseToWords(i)}</label>
+                                <select className="form-control" data-field={i} id={i} onChange={updateState}>
+                                {Object.keys(obj[i].oneOf).map((j) => (
+                                    <option key={obj[i].oneOf[j]['const']}>{obj[i].oneOf[j]['title']}</option>
+                                ))}
+                                </select></div>);
+                            break;
+                        case "hidden":
+                            result.push(<input className="form-control" data-field={i} type="text" id={i} onChange={updateState}></input>);
+                            break;
+                    }
+                } else {
+                    result.push(<div className="form-group"><label htmlFor={i}>{camelCaseToWords(i)}</label>
+                    <input className="form-control" data-field={i} type="text" id={i} onChange={updateState} value={data[i]}></input></div>);
+                }
+            }
+        }
+        return result;
+    }
 
     return (
         <form onSubmit={handleSubmit} style={{ padding: 20 }}>
-            <JsonForms
-                schema={schema}
-                uischema={uischema}
-                data={data}
-                renderers={materialRenderers}
-                cells={materialCells}
-                onChange={({ data, errors }) => { setData(data); setErrors(errors) }}
-            />
+            {drawProps(schema.properties, 'properties')}
             <input type="text" value={data.id || ''} readOnly></input>
             <button type="submit" disabled={errors.length > 0}>Save {form}</button>
             <p>Data</p>
             <JsonEditor
-                data={{data, schema, uischema, errors}}
+                data={{ data, dschema, errors }}
             // setData={ setJsonData } // optional
             // { ...otherProps } 
             />
-            <div style={ { height:  500 } }></div>
+            <div style={{ height: 500 }}></div>
         </form>
     );
 }

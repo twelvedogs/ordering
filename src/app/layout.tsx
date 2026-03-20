@@ -1,4 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
+import "bootstrap/dist/css/bootstrap.css";
 import "./globals.css";
 import { Providers } from "./providers";
 import type { Metadata } from "next";
