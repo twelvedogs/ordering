@@ -1,7 +1,6 @@
 import * as db from "@/app/lib/db";
 import getSchema from "@/app/schemas/schemas";
 import Client from "./client";
-// @ works now lol?
 
 // server side of the edit page
 export default async function Page({ params, searchParams }: { params: { form: string }, searchParams: { id?: string } })  {
@@ -24,7 +23,7 @@ export default async function Page({ params, searchParams }: { params: { form: s
     // insert the client side code
     return (
       <div>
-        <Client document={doc_copy} schema={schema} form={form} />
+        <Client document={doc_copy} schema={schema.schema} form={form} />
       </div>
     );
   } catch (error) {

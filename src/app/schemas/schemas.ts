@@ -1,14 +1,14 @@
-import * as customer from "./customer";
-import * as modem from "./modem";
-import * as order from "./order";
+import {Customer} from "./customer";
+import {Modem} from "./modem";
+import {Order} from "./order";
 
 let schemas = {};
-schemas['customers'] = customer;
-schemas['modems'] = modem;
-schemas['orders'] = order;
+schemas['customers'] = Customer;
+schemas['modems'] = Modem;
+schemas['orders'] = Order;
 
 export default async function getSchema(collection: string){
-    return await schemas[collection];
+    return await new schemas[collection]();
 }
 
 

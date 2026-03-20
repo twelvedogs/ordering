@@ -2,12 +2,13 @@ import * as db from "../lib/db";
 import {ModemData} from "./modem";
 
 
+// todo: do i need an orderId as well as just the rowId?
 export class Order {
     schema = {
             type: "object",
             properties: {
-                orderId: { type: "number" },
-                crmid: { type: "number" },
+                // orderId: { type: "number" },
+                crmId: { type: "string" }, //guid
                 firstName: { type: "string", minLength: 2 },
                 lastName: { type: "string", minLength: 2 },
                 age: { type: "number" },

@@ -1,4 +1,5 @@
 import Ajv from "ajv";
+import addFormats from "ajv-formats"
 import { v4 as uuidv4 } from "uuid";
 import getSchema from "../schemas/schemas";
 import { Client } from "pg";
@@ -13,8 +14,10 @@ export async function save(data: any, collection: string) {
         console.log('checking with updated schema')
 
         var ajv = new Ajv();
-        // jsonforms uses ajv for validation, probably use the same thing instead of this
-        const valid = ajv.validate(schema, data);
+        addFormats(ajv);
+        
+        // jsonforms uses ajv for validation
+        const valid = ajv.validate(schema.schema, data);
         if (!valid) {
             console.log(`validation errors with ${collection}`, ajv.errors, data);
             return { errors: ajv.errors };

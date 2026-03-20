@@ -20,6 +20,7 @@
     "@mui/x-date-pickers": "^8.23.0",
     "@types/pg": "^8.18.0",
     "ajv": "^8.18.0",
+    "ajv-formats": "^3.0.1",
     "bootstrap": "^5.3.8",
     "dotenv": "^17.2.3",
     "next": "^16.1.1",

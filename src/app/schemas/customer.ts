@@ -5,10 +5,10 @@ export class Customer {
             crmid: { type: "number" },
             firstName: { type: "string", minLength: 2 },
             lastName: { type: "string", minLength: 2 },
-            contract: { type: "string", readOnly: true },
+            contract: { type: "string", description: "this needs to go lol" },
             licence: { type: "string", readOnly: true },
-            dob: { type: "date", readOnly: true },
-            created: { type: "date" },
+            dob: { type: "string", format: "date" },
+            created: { type: "string", format: "date" },
         },
         required: ["firstName", "lastName"],
     };
