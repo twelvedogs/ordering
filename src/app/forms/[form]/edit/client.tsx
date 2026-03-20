@@ -1,14 +1,17 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { JsonForms } from "@jsonforms/react";
 import {
     materialCells,
     materialRenderers,
 } from "@jsonforms/material-renderers";
+import { JsonEditor } from 'json-edit-react'
+import { JsonSchema, UISchemaElement } from "@jsonforms/core";
 
 interface ClientProps {
-    schema?: object;
+    schema?: JsonSchema;
+    uischema?: UISchemaElement;
     document?: any;
     form: string;
 }
@@ -16,14 +19,40 @@ interface ClientProps {
 // this is a client side function, stop making db calls in it!
 export default function Client({
     schema,
+    uischema,
     document,
     form
 }: ClientProps) {
     const [data, setData] = useState(document || {});
+    // form error object
     const [errors, setErrors] = useState([]);
+    // const [updatedSchema, setUpdatedSchema] = useState(schema);
+
+    // this is dumb just use $ref
+    // useEffect(() => {
+    //     if (data?.addresses && Array.isArray(data.addresses) && updatedSchema) {
+    //         const addressIds = data.addresses.map((addr: any, idx: number) => 
+    //             addr.id || `address-${idx}`
+    //         );
+            
+    //         // Create a deep copy and update the enum values
+    //         const newSchema = JSON.parse(JSON.stringify(updatedSchema));
+    //         if (newSchema.properties?.physicalAddress) {
+    //             newSchema.properties.physicalAddress.enum = addressIds;
+    //         }
+    //         if (newSchema.properties?.postalAddress) {
+    //             newSchema.properties.postalAddress.enum = addressIds;
+    //         }
+            
+    //         setUpdatedSchema(newSchema);
+    //     }
+    // }, [data?.addresses]);
 
     // handle save click event
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+
+        // if(errors.length>0) return;
+
         event.preventDefault();
         try {
             const response = await fetch("/api/crud", {
@@ -61,7 +90,7 @@ export default function Client({
         <form onSubmit={handleSubmit} style={{ padding: 20 }}>
             <JsonForms
                 schema={schema}
-                // uischema={uischema}
+                uischema={uischema}
                 data={data}
                 renderers={materialRenderers}
                 cells={materialCells}
@@ -70,9 +99,12 @@ export default function Client({
             <input type="text" value={data.id || ''} readOnly></input>
             <button type="submit" disabled={errors.length > 0}>Save {form}</button>
             <p>Data</p>
-            <pre>{JSON.stringify(data, null, 2)}</pre>
-            <p>errors</p>
-            <pre>{JSON.stringify(errors, null, 2)}</pre>
+            <JsonEditor
+                data={{data, schema, uischema, errors}}
+            // setData={ setJsonData } // optional
+            // { ...otherProps } 
+            />
+            <div style={ { height:  500 } }></div>
         </form>
     );
 }

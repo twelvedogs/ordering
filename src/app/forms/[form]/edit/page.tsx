@@ -23,7 +23,7 @@ export default async function Page({ params, searchParams }: { params: { form: s
     // insert the client side code
     return (
       <div>
-        <Client document={doc_copy} schema={schema.schema} form={form} />
+        <Client document={doc_copy} schema={schema.schema} uischema={schema.uischema ? schema.uischema : {}} form={form} />
       </div>
     );
   } catch (error) {
