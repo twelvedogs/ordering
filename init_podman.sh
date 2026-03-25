@@ -7,7 +7,7 @@ podman run --detach --replace \
 	-v /home/twelvedogs/podman/postgres/data:/var/lib/postgresql/data \
 	docker.io/library/postgres:16-alpine
 
-# Initialize database schema
+# Initialize database schema or whatevs
 sleep 2
 podman exec postgres psql -U postgres -d ordering -c "
 CREATE TABLE IF NOT EXISTS documents (
