@@ -44,6 +44,7 @@ export class Customer {
                 type: "number",
                 inputType: "select",
                 oneOf: { $ref: "#/data/addresses" },
+                // todo: map might hide the map function
                 map: { 
                     const: "id",
                     title: "line1"
@@ -70,6 +71,7 @@ export class Customer {
         required: ["firstName", "lastName"],
     };
 
+    // i want to infer a good form layout rather than just baby it, this method can just fuck off
     uischema = {
         type: "VerticalLayout",
         elements: [
