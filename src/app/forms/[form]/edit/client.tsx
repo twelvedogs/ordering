@@ -111,13 +111,11 @@ export default function Client({
                                 <input className="form-control" data-field={i} type="file" id={i} onChange={updateState}></input></div>);
                             break;
                         case "select":
-                            // if obj[i].mapFields or something prolly
-                            // todo: on dereference map the fields
+
                             let options =[];
                             if(obj[i].mapFields){
                                 // options = obj[i].oneOf.map((option)=>{return {const: option[obj[i].mapFields.const], title: option[obj[i].mapFields.title]}});
                                 options = obj[i].oneOf.map((option, j)=>{return {const: j, title: option[obj[i].mapFields.title]}});
-                                console.log(options);
                             }else{
                                 options = obj[i].oneOf;
                             }
@@ -125,7 +123,7 @@ export default function Client({
                             result.push(<div key={i} className="form-group"><label htmlFor={i}>{camelCaseToWords(i)}</label>
                                 <select className="form-control" data-field={i} id={i} onChange={updateState}>
                                 {Object.keys(options).map((j) => (
-                                    <option key={options[j]['const']}>{options[j]['title']}</option>
+                                    <option key={options[j]['const']} value={options[j]['const']} >{options[j]['title']}</option>
                                 ))}
                                 </select></div>);
                             break;

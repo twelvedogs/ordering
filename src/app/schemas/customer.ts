@@ -56,7 +56,7 @@ export class Customer {
                 type: "number",
                 inputType: "select",
                 oneOf: { $ref: "#/data/addresses" },
-                map: { 
+                mapFields: { 
                     const: "id",
                     title: "line1"
                 }
@@ -65,7 +65,7 @@ export class Customer {
                 type: "number",
                 inputType: "select",
                 oneOf: { $ref: "#/data/addresses" },
-                map: { 
+                mapFields: { 
                     const: "id",
                     title: "line1"
                 }
