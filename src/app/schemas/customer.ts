@@ -17,12 +17,12 @@ export class Customer {
         type: "object",
         properties: {
             crmid: { type: "number", inputType: "text" },
-            firstName: { type: "string", minLength: 1 },
-            lastName: { type: "string", minLength: 1 },
-            licenceNumber: { type: "string", readOnly: true },
+            firstName: { type: "string", minLength: 1, inputType: "text" },
+            lastName: { type: "string", minLength: 1, inputType: "text" },
+            licenceNumber: { type: "string", readOnly: true, inputType: "text" },
             dob: { type: "string", format: "date", inputType: "date" },
-            created: { type: "string", format: "date" },
-            passedCreditCheck: { type: "boolean" },
+            created: { type: "string", format: "date", inputType: "date" },
+            passedCreditCheck: { type: "boolean", inputType: "checkbox" },
             test: {
                 type: "string", 
                 inputType: "select",
@@ -45,10 +45,12 @@ export class Customer {
                 inputType: "select",
                 oneOf: { $ref: "#/data/addresses" },
                 // todo: map might hide the map function
-                map: { 
+                mapFields: { 
                     const: "id",
                     title: "line1"
-                }
+                },
+                // might work.  a different way though, don't put it in the schema
+                //mapFunc: () => {this.schema.properties.physicalAddress.map((item)=>{return {const: item.line1} })}
             },
             postalAddress: {
                 type: "number",
@@ -61,6 +63,7 @@ export class Customer {
             },
             billingAddress: {
                 type: "number",
+                inputType: "select",
                 oneOf: { $ref: "#/data/addresses" },
                 map: { 
                     const: "id",

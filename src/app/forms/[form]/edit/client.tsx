@@ -95,34 +95,48 @@ export default function Client({
                 if (obj[i].inputType) {
                     switch (obj[i].inputType) {
                         case "number":
-                            result.push(<div className="form-group"><label htmlFor={i}>{camelCaseToWords(i)}</label>
+                            result.push(<div key={i} className="form-group"><label htmlFor={i}>{camelCaseToWords(i)}</label>
                                 <input className="form-control" data-field={i} type="number" id={i} onChange={updateState} value={data[i]}></input></div>);
                             break;
+                        case "checkbox":
+                            result.push(<div key={i} className="form-group"><label htmlFor={i}>{camelCaseToWords(i)}</label>
+                                <input className="form-control" data-field={i} type="checkbox" id={i} onChange={updateState}></input></div>);
+                            break;
                         case "date":
-                            result.push(<div className="form-group"><label htmlFor={i}>{camelCaseToWords(i)}</label>
+                            result.push(<div key={i} className="form-group"><label htmlFor={i}>{camelCaseToWords(i)}</label>
                                 <input className="form-control" data-field={i} type="date" id={i} onChange={updateState}></input></div>);
                             break;
                         case "file":
-                            result.push(<div className="form-group"><label htmlFor={i}>{camelCaseToWords(i)}</label>
+                            result.push(<div key={i} className="form-group"><label htmlFor={i}>{camelCaseToWords(i)}</label>
                                 <input className="form-control" data-field={i} type="file" id={i} onChange={updateState}></input></div>);
                             break;
                         case "select":
-                            // if obj[i].map or something prolly
+                            // if obj[i].mapFields or something prolly
                             // todo: on dereference map the fields
-                            result.push(<div className="form-group"><label htmlFor={i}>{camelCaseToWords(i)}</label>
+                            let options =[];
+                            if(obj[i].mapFields){
+                                // options = obj[i].oneOf.map((option)=>{return {const: option[obj[i].mapFields.const], title: option[obj[i].mapFields.title]}});
+                                options = obj[i].oneOf.map((option, j)=>{return {const: j, title: option[obj[i].mapFields.title]}});
+                                console.log(options);
+                            }else{
+                                options = obj[i].oneOf;
+                            }
+
+                            result.push(<div key={i} className="form-group"><label htmlFor={i}>{camelCaseToWords(i)}</label>
                                 <select className="form-control" data-field={i} id={i} onChange={updateState}>
-                                {Object.keys(obj[i].oneOf).map((j) => (
-                                    <option key={obj[i].oneOf[j]['const']}>{obj[i].oneOf[j]['title']}</option>
+                                {Object.keys(options).map((j) => (
+                                    <option key={options[j]['const']}>{options[j]['title']}</option>
                                 ))}
                                 </select></div>);
                             break;
                         case "hidden":
-                            result.push(<input className="form-control" data-field={i} type="text" id={i} onChange={updateState}></input>);
+                            result.push(<input key={i} className="form-control" data-field={i} type="text" id={i} onChange={updateState}></input>);
                             break;
                     }
                 } else {
-                    result.push(<div className="form-group"><label htmlFor={i}>{camelCaseToWords(i)}</label>
-                    <input className="form-control" data-field={i} type="text" id={i} onChange={updateState} value={data[i]}></input></div>);
+                    // result.push(<div className="form-group"><label htmlFor={i}>{camelCaseToWords(i)}</label>
+                    // <input className="form-control" data-field={i} type="text" id={i} onChange={updateState} value={data[i]}></input></div>);
+                    result.push(<div key={i} className="form-group">{camelCaseToWords(i)}: no inputType set for {i}</div>);
                 }
             }
         }
