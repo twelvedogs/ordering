@@ -3,20 +3,30 @@ import addFormats from "ajv-formats"
 import { v4 as uuidv4 } from "uuid";
 import getSchema from "../schemas/schemas";
 import { Client } from "pg";
+import $RefParser from "@apidevtools/json-schema-ref-parser";
+import { StrictMode } from "react";
+
 
 export async function save(data: any, collection: string) {
     try {
         // Validate data against schema
         // todo: check collection name is valid
+        // get raw schema as definded in <collection>.ts
         collection = collection.toLowerCase();
-        let schema = await getSchema(collection);
+        var schema = await getSchema(collection);
         await schema.load();
-        console.log('checking with updated schema')
 
-        var ajv = new Ajv();
+        // todo: this is messy and probably insecure
+        // we're validating data against the data itself, to some extent that's maybe necessary as the correct
+        // values are provided by the client ie: selectable addresses
+        // pull schema data in from the data blob so $ref: "#/data/addresses" gets replaced with actual address data
+        let updatedSchema = await $RefParser.dereference({ schema: schema.schema, data }, { mutateInputSchema: false }) as any;
+        schema.schema = updatedSchema.schema;
+
+        let ajv = new Ajv({strictSchema: "log"});
         addFormats(ajv);
-        
-        // jsonforms uses ajv for validation
+        ajv.addVocabulary(["inputType", "mapFields"])
+        // jsonforms uses ajv for validation, might switch to https://github.com/jquense/yup?tab=readme-ov-file#yup
         const valid = ajv.validate(schema.schema, data);
         if (!valid) {
             console.log(`validation errors with ${collection}`, ajv.errors, data);
@@ -48,7 +58,7 @@ export async function save(data: any, collection: string) {
         await client.end();
         return { result: result.rows[0] };
     } catch (error) {
-        console.error(`Error saving ${collection}:`, error);
+        console.error(`Error saving ${collection}:`, error, JSON.stringify(schema, null, 2));
         throw error;
     }
 }

@@ -24,20 +24,16 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-.form-group.row, .form-check.row{
-    margin-bottom: 1rem;
-}
-
-* {
+/* * {
     box-sizing: border-box;
     padding: 0;
     margin: 0;
-}
+} */
 
-a {
+/* a {
     color: inherit;
     text-decoration: none;
-}
+} */
 
 @media (prefers-color-scheme: light) {
     html {

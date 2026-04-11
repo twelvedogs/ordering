@@ -1,6 +1,8 @@
 import { Geist, Geist_Mono } from "next/font/google";
-import "bootstrap/dist/css/bootstrap.css";
-import "./globals.css";
+
+import 'bootstrap/dist/css/bootstrap.min.css';
+import "./globals.css"
+
 import { Providers } from "./providers";
 import type { Metadata } from "next";
 
@@ -20,7 +22,7 @@ export const metadata: Metadata = {
 };
 
 // nextjs passes in the children var apparently
-export default function RootLayout({
+export default function RootLayout({ 
   children,
 }: {
   children: React.ReactNode;
@@ -28,6 +30,36 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        
+
+
+
+        {/* <Navbar expand="lg" className="bg-body-tertiary">
+          <Container>
+            <Navbar.Brand href="/">Ordering</Navbar.Brand> 
+            <Navbar.Toggle aria-controls="basic-navbar-nav" />
+            <Navbar.Collapse id="basic-navbar-nav">
+              <Nav className="me-auto">
+                <Nav.Link href="/">Home</Nav.Link>
+                <Nav.Link href="/forms/Modems">Modems</Nav.Link>
+                <Nav.Link href="/forms/Orders">Orders</Nav.Link>
+                <Nav.Link href="/forms/Customers">Customers</Nav.Link>
+                <Nav.Link href="#link">Link</Nav.Link>
+                <NavDropdown title="Dropdown" id="basic-nav-dropdown">
+                  <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
+                  <NavDropdown.Item href="#action/3.2">
+                    Another action
+                  </NavDropdown.Item>
+                  <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
+                  <NavDropdown.Divider />
+                  <NavDropdown.Item href="#action/3.4">
+                    Separated link
+                  </NavDropdown.Item>
+                </NavDropdown>
+              </Nav>
+            </Navbar.Collapse>
+          </Container>
+        </Navbar> */}
         <div><a href="/">Home</a> | <a href="/forms/Modems/">Modems</a> | <a href="/forms/Orders/">Orders</a> | <a href="/forms/Customers/">Customers</a></div>
         <Providers>{children}</Providers>
       </body>
