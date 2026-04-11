@@ -5,7 +5,7 @@ export const Address = {
         name: { type: "string" },
         line1: { type: "string" },
         line2: { type: "string" },
-        postcode: { type: "number", minLength: "4" },
+        postcode: { type: "number"},
         state: { type: "string" }
 
     }, required: ["line1", "postcode", "state"]

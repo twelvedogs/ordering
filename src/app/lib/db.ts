@@ -4,8 +4,10 @@ import { v4 as uuidv4 } from "uuid";
 import getSchema from "../schemas/schemas";
 import { Client } from "pg";
 import $RefParser from "@apidevtools/json-schema-ref-parser";
-import { StrictMode } from "react";
 
+async function validateWithYup(){
+    
+}
 
 export async function save(data: any, collection: string) {
     try {
@@ -20,6 +22,7 @@ export async function save(data: any, collection: string) {
         // we're validating data against the data itself, to some extent that's maybe necessary as the correct
         // values are provided by the client ie: selectable addresses
         // pull schema data in from the data blob so $ref: "#/data/addresses" gets replaced with actual address data
+        // this actually needs a different type of de-referencing lol
         let updatedSchema = await $RefParser.dereference({ schema: schema.schema, data }, { mutateInputSchema: false }) as any;
         schema.schema = updatedSchema.schema;
 
@@ -29,7 +32,7 @@ export async function save(data: any, collection: string) {
         // jsonforms uses ajv for validation, might switch to https://github.com/jquense/yup?tab=readme-ov-file#yup
         const valid = ajv.validate(schema.schema, data);
         if (!valid) {
-            console.log(`validation errors with ${collection}`, ajv.errors, data);
+            console.log(`validation errors with ${collection}`, ajv.errors, JSON.stringify(schema.schema, null, 2), JSON.stringify(data, null, 2));
             return { errors: ajv.errors };
         }
 
@@ -54,12 +57,15 @@ export async function save(data: any, collection: string) {
             `;
 
         const result = await client.query(query, [docId, collection, JSON.stringify(data)]);
-        // console.log(`Save ${collection} result`, result.rows[0]);
+
         await client.end();
         return { result: result.rows[0] };
     } catch (error) {
+        
         console.error(`Error saving ${collection}:`, error, JSON.stringify(schema, null, 2));
-        throw error;
+        //throw error;
+        // todo: don't return raw errors
+        return {errors: [error]};
     }
 }
 

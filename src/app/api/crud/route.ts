@@ -21,7 +21,7 @@ export async function DELETE(request: Request) {
 export async function POST(request: Request) {
   // get form data  
   const req = await request.json();
-  console.log('post', req);
+  // console.log('post', req);
 
   // todo: authorisation, 
   //   schema validation is in save

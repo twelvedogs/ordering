@@ -1,6 +1,5 @@
 import * as db from "../../lib/db";
-import View from "./view"
-import React from "react";
+
 export default async function Page({ params }: { params: { form: string } }) {
   const p = await params;
   const form = p.form;

@@ -19,9 +19,9 @@ export class Customer {
             // this is silly by the way i'm solving a dumb problem, addresses does *not*
             // need to be an array, however modems etc on order does
             physicalAddress: {
-                type: Address,
+                type: "object", // should be an int, the way i've automated the state updates makes it a string though
                 inputType: "select",
-                oneOf: { $ref: "#/data/addresses" },
+                anyOf: { $ref: "#/data/addresses" },
                 mapFields: { 
                     const: "id",
                     title: "line1"
@@ -30,18 +30,18 @@ export class Customer {
                 //mapFunc: () => {this.schema.properties.physicalAddress.map((item)=>{return {const: item.line1} })}
             },
             postalAddress: {
-                type: "number",
+                type: "object",
                 inputType: "select",
-                oneOf: { $ref: "#/data/addresses" },
+                anyOf: { $ref: "#/data/addresses" },
                 mapFields: { 
                     const: "id",
                     title: "line1"
                 }
             },
             billingAddress: {
-                type: "number",
+                type: "object",
                 inputType: "select",
-                oneOf: { $ref: "#/data/addresses" },
+                anyOf: { $ref: "#/data/addresses" },
                 mapFields: { 
                     const: "id",
                     title: "line1"

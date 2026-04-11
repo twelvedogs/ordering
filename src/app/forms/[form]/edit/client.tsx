@@ -41,8 +41,18 @@ export default function Client({
     const updateState = (e) => {
         // i'm getting tired
         let datas = {...data};
-        // id is prefixed by form name
-        datas[e.target.dataset.field]=e.target.value;
+
+        // select
+        try{
+            if(e.target.type === "select-one")
+                datas[e.target.dataset.field] = schema.properties[e.target.dataset.field].anyOf[e.target.value];
+            else
+                // id is prefixed by form name (later)
+                datas[e.target.dataset.field]=e.target.value;
+        }catch(ex){
+            console.log(ex);
+        }
+
         setData(datas);
     }
 
@@ -50,7 +60,7 @@ export default function Client({
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 
         // if(errors.length>0) return;
-        event.preventDefault();
+        event?.preventDefault();
         try {
             const response = await fetch("/api/crud", {
                 method: "POST",
@@ -76,7 +86,7 @@ export default function Client({
                     error_message = result.errors.filter((error) => { error_message += `${error.argument}:  ${error.name}\n`; return true; });
                     setServerResponse(error_message);
 }
-                alert(`Failed to save ${form}\n${error_message}`);
+                // alert(`Failed to save ${form}\n${error_message}`);
             }
 
         } catch (error) {
@@ -90,7 +100,8 @@ export default function Client({
             <div className="col-lg-6">
                 {drawProps(schema.properties, 'properties', updateState, data)}
                 <input type="hidden" value={data.id || ''} readOnly></input>
-                <button type="submit" className="btn btn-primary" disabled={errors.length > 0}>Save {form}</button>
+                {/* <button type="submit" className="btn btn-primary" disabled={errors.length > 0}>Submit {form}</button> */}
+                <button type="button" onClick={()=>{handleSubmit(null)}} className="btn btn-primary" disabled={errors.length > 0}>Save {form}</button>
             </div>
             <div className="col-lg-6">
                 {serverResponse}
