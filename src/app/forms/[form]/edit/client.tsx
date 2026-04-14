@@ -42,10 +42,12 @@ export default function Client({
         // i'm getting tired
         let datas = {...data};
 
-        // select
         try{
+            // select
             if(e.target.type === "select-one")
                 datas[e.target.dataset.field] = schema.properties[e.target.dataset.field].anyOf[e.target.value];
+            else if (e.target.type === "checkbox")
+                datas[e.target.dataset.field]=e.target.checked;
             else
                 // id is prefixed by form name (later)
                 datas[e.target.dataset.field]=e.target.value;
@@ -96,16 +98,15 @@ export default function Client({
 
     
     return (
-        <form onSubmit={handleSubmit} style={{ padding: 20 }}>
-            <div className="col-lg-6">
+        <div style={{width: "100%", display: "flex", alignContent:"center", flexWrap: "wrap", border:"1px solid black" }}>
+        <form onSubmit={handleSubmit} style={{ padding: 20, maxWidth: 2000, border: "1px solid green", margin: "auto" }}>
+            <div className="col-lg-12">
                 {drawProps(schema.properties, 'properties', updateState, data)}
                 <input type="hidden" value={data.id || ''} readOnly></input>
                 {/* <button type="submit" className="btn btn-primary" disabled={errors.length > 0}>Submit {form}</button> */}
                 <button type="button" onClick={()=>{handleSubmit(null)}} className="btn btn-primary" disabled={errors.length > 0}>Save {form}</button>
             </div>
-            <div className="col-lg-6">
-                {serverResponse}
-            </div>
+
             <p onClick={() => setShowJson(!showJson)}>Data</p>
             <div style={{visibility: showJson ? "visible": "hidden"}}>
 
@@ -114,8 +115,10 @@ export default function Client({
             // setData={ setJsonData } // optional
             // { ...otherProps } 
             />
+            </div><div className="col-lg-2">
+                {serverResponse}
             </div>
             <div style={{ height: 500 }}></div>
-        </form>
+        </form>            </div>
     );
 }

@@ -4,11 +4,11 @@ export class Modem {
     schema = {
         type: "object",
         properties: {
-            modemId: { type: "number" },
-            name: { type: "string", minLength: 2 },
-            price: { type: "string", minLength: 2 },
-            brand: { type: "number" },
-            active: { type: "string" },
+            modemId: { type: "number", inputType: "none"},
+            name: { type: "string", inputType: "text", minLength: 2 },
+            price: { type: "string", inputType: "text", minLength: 2 },
+            brand: { type: "number", inputType: "select" },
+            active: { type: "string", inputType: "checkbox" },
         },
         required: ["name", "price"],
     };

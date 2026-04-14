@@ -24,6 +24,10 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+.align-right{
+    text-align: right
+}
+
 .form-group.row, .form-check.row{
     margin-bottom: 1rem;
 }
