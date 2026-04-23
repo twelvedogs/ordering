@@ -1,3 +1,5 @@
+mkdir -p ./data/
+
 podman run --detach --replace \
 	--name postgres \
 	-p 5432:5432 \
